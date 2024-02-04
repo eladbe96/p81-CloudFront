@@ -1,6 +1,6 @@
 name: Deploy AWS Infra
 on:
-  - push
+  - pull_request
 env:
   tf_version: '1.5.7'
   tg_version: '0.53.2'
@@ -37,12 +37,27 @@ jobs:
           tg_command: 'apply'
 
       - name: Save Terraform outputs
-        id: set_outputs
+        uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_wrapper: false
         run: |
-          echo "S3_BUCKET_NAME_FROM_GIT=$(terraform output -json aws_s3_bucket)" >> $GITHUB_ENV
-          echo "CLOUDFRONT_URL_FROM_GIT=$(terraform output -json aws_cloudfront_distribution_URL)" >> $GITHUB_ENV
-        working-directory: ${{ env.working_dir }}
-        shell: bash
+            echo "S3_BUCKET_NAME_FROM_GIT=$(aws_s3_bucket)" >> $GITHUB_ENV
+            echo "CLOUDFRONT_URL_FROM_GIT=$(aws_cloudfront_distribution_URL)" >> $GITHUB_ENV
+            working-directory: ${{ env.working_dir }}
+            shell: bash
+
+   python_code:
+      needs: deploy
+      runs-on: ubuntu-latest
+      steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Run Python Script
+        run: |
+          python3 testing_terrgr_ver.py
+        env:
+          S3_BUCKET_NAME: ${{ env.S3_BUCKET_NAME_FROM_GIT }}
+          CLOUDFRONT_URL: ${{ env.CLOUDFRONT_URL_FROM_GIT }}
         
 
         
