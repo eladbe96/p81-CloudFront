@@ -2,8 +2,8 @@ name: Download the file from CloudFront
 
 on:
   workflow_run:
-    workflows: ["deployAWS"]
-    branches: [main]
+    workflows: 
+      - deployAWS
     types: 
       - completed
 
