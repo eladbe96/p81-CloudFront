@@ -1,9 +1,7 @@
 name: Download the file from CloudFront
 
 on:
-  push:
-    branches:
-      - main
+  pull_request
 
 jobs:
   run_python_script:
