@@ -21,8 +21,9 @@ jobs:
           aws-region: eu-west-1
         
       - name: AWS Login
-      - run: sam build --use-container
-      - run: sam deploy --no-confirm-changeset --no-fail-on-empty-changeset
+        run: | 
+          sam build --use-container
+          sam deploy --no-confirm-changeset --no-fail-on-empty-changeset
           
       - name: 'Checkout'
         uses: actions/checkout@main
