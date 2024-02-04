@@ -39,8 +39,8 @@ jobs:
       - name: Save Terraform outputs
         id: set_outputs
         run: |
-          echo "S3_BUCKET_NAME=$(terraform output -json aws_s3_bucket)" >> $GITHUB_ENV
-          echo "CLOUDFRONT_URL=$(terraform output -json aws_cloudfront_distribution_URL)" >> $GITHUB_ENV
+          echo "S3_BUCKET_NAME_FROM_GIT=$(terraform output -json aws_s3_bucket)" >> $GITHUB_ENV
+          echo "CLOUDFRONT_URL_FROM_GIT=$(terraform output -json aws_cloudfront_distribution_URL)" >> $GITHUB_ENV
         working-directory: ${{ env.working_dir }}
         shell: bash
         
