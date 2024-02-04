@@ -8,10 +8,22 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+        with:
+          working-directory: ./
       - name: Run Python Script
+      - uses: actions/setup-python@v2
+        with:
+          python-version: 3
+      - name: install
         run: |
           python3 testing_terrgr_ver.py
+          pip install boto3 requests json os
+          
         env:
           S3_BUCKET_NAME: ${{ env.S3_BUCKET_NAME_FROM_GIT }}
           CLOUDFRONT_URL: ${{ env.CLOUDFRONT_URL_FROM_GIT }}
+      - name: running python
+        run :
+          python testing_terrgr_ver.py
 
+                
