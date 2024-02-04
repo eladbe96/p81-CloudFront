@@ -5,8 +5,8 @@ from botocore import UNSIGNED
 from botocore.config import Config
 import os
 
-s3_bucket_name_from_git = os.getenv("S3_BUCKET_NAME_FROM_GIT")
-cloudfront_url_from_git = os.getenv("CLOUDFRONT_URL_FROM_GIT")
+s3_bucket_name_from_git = os.environ.get("S3_BUCKET_NAME")
+cloudfront_url_from_git = os.environ.get("CLOUDFRONT_URL")
 
 # A. Download JSON from https://dummyjson.com/products
 url = "https://dummyjson.com/products"
