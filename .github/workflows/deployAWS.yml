@@ -1,13 +1,13 @@
 name: Deploy AWS Infra
 on:
-  - push
+  - pull_request
 env:
   tf_version: '1.5.7'
   tg_version: '0.53.2'
   working_dir: 'prod'
   
 jobs:
-  login:
+  deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -19,33 +19,15 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY_V2 }}
           aws-region: eu-west-1
           
-      - name: 'Checkout'
-        uses: actions/checkout@main
-
-  plan:
-    runs-on: ubuntu-latest
-    needs: [ login ]
-    steps:
-      - name: 'Checkout'
-        uses: actions/checkout@main
-
-      - name: Plan
+      - name: install and plan terragrunt
         uses: gruntwork-io/terragrunt-action@v2
         with:
           tf_version: ${{ env.tf_version }}
           tg_version: ${{ env.tg_version }}
           tg_dir: ${{ env.working_dir }}
           tg_command: 'plan'
-
-  deploy:
-    runs-on: ubuntu-latest
-    needs: [ plan ]
-    environment: 'prod'
-    if: github.ref == 'refs/heads/main'
-    steps:
-      - name: 'Checkout'
-        uses: actions/checkout@main
-
+          if: github.ref == 'refs/heads/main'
+          
       - name: Deploy
         uses: gruntwork-io/terragrunt-action@v2
         with:
@@ -53,6 +35,14 @@ jobs:
           tg_version: ${{ env.tg_version }}
           tg_dir: ${{ env.working_dir }}
           tg_command: 'apply'
+
+      - name: Save Terraform outputs
+        id: set_outputs
+        run: |
+          echo "S3_BUCKET_NAME_FROM_GIT=$(terraform output -json aws_s3_bucket)" >> $GITHUB_ENV
+          echo "CLOUDFRONT_URL_FROM_GIT=$(terraform output -json aws_cloudfront_distribution_URL)" >> $GITHUB_ENV
+        working-directory: ${{ env.working_dir }}
+        shell: bash
         
 
         

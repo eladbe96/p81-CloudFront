@@ -1,0 +1,23 @@
+name: Download the file from CloudFront
+
+on:
+  workflow_run:
+    workflows: ["deployAWS"]
+    branches: [main]
+    types: 
+      - completed
+
+jobs:
+  run_python_script:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+  
+      - name: Run Python Script
+        run: |
+          python3 testing_terrgr_ver.py
+        env:
+          S3_BUCKET_NAME: ${{ env.S3_BUCKET_NAME_FROM_GIT }}
+          CLOUDFRONT_URL: ${{ env.CLOUDFRONT_URL_FROM_GIT }}
