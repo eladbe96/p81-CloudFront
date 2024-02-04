@@ -1,0 +1,65 @@
+name: Deploy AWS Infra
+on:
+  - push
+env:
+  tf_version: '1.5.7'
+  tg_version: '0.53.2'
+  working_dir: 'prod'
+  
+jobs:
+  login:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      
+      - name: AWS Login
+        run: aws configure set aws_access_key_id {{ secrets.AWS_ACCESS_KEY }} && aws configure set aws_secret_access_key {{ secrets.AWS_SECRET_KEY }} && aws configure set default.region eu-west-1
+      - name: 'Checkout'
+        uses: actions/checkout@main
+  checks:
+     runs-on: ubuntu-latest
+     steps:
+      - name: Check terragrunt HCL
+        uses: gruntwork-io/terragrunt-action@v2
+        with:
+          tf_version: ${{ env.tf_version }}
+          tg_version: ${{ env.tg_version }}
+          tg_dir: ${{ env.working_dir }}
+          tg_command: 'hclfmt --terragrunt-check --terragrunt-diff'
+
+  plan:
+    runs-on: ubuntu-latest
+    needs: [ checks ]
+    steps:
+      - name: 'Checkout'
+        uses: actions/checkout@main
+
+      - name: Plan
+        uses: gruntwork-io/terragrunt-action@v2
+        with:
+          tf_version: ${{ env.tf_version }}
+          tg_version: ${{ env.tg_version }}
+          tg_dir: ${{ env.working_dir }}
+          tg_command: 'plan'
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: [ plan ]
+    environment: 'prod'
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - name: 'Checkout'
+        uses: actions/checkout@main
+
+      - name: Deploy
+        uses: gruntwork-io/terragrunt-action@v2
+        with:
+          tf_version: ${{ env.tf_version }}
+          tg_version: ${{ env.tg_version }}
+          tg_dir: ${{ env.working_dir }}
+          tg_command: 'apply'
+        
+
+        
+    
