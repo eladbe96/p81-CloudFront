@@ -1,6 +1,6 @@
 name: Deploy AWS Infra
 on:
-  - push
+  - pull_request
 env:
   tf_version: '1.5.7'
   tg_version: '0.53.2'
@@ -35,6 +35,14 @@ jobs:
           tg_version: ${{ env.tg_version }}
           tg_dir: ${{ env.working_dir }}
           tg_command: 'apply'
+
+      - name: Save Terraform outputs
+        id: set_outputs
+        run: |
+          echo "S3_BUCKET_NAME=$(terraform output -json aws_s3_bucket)" >> $GITHUB_ENV
+          echo "CLOUDFRONT_URL=$(terraform output -json aws_cloudfront_distribution_URL)" >> $GITHUB_ENV
+        working-directory: ${{ env.working_dir }}
+        shell: bash
         
 
         
