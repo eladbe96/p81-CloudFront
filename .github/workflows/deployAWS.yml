@@ -40,16 +40,16 @@ jobs:
         uses: hashicorp/setup-terraform@v1
         with:
           terraform_wrapper: false
-        run: |
+          run: |
             echo "S3_BUCKET_NAME_FROM_GIT=$(aws_s3_bucket)" >> $GITHUB_ENV
             echo "CLOUDFRONT_URL_FROM_GIT=$(aws_cloudfront_distribution_URL)" >> $GITHUB_ENV
             working-directory: ${{ env.working_dir }}
             shell: bash
 
-   python_code:
-      needs: deploy
-      runs-on: ubuntu-latest
-      steps:
+  python_code:
+    needs: deploy
+    runs-on: ubuntu-latest
+    steps:
       - name: Checkout
         uses: actions/checkout@v3
       - name: Run Python Script
