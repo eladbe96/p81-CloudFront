@@ -3,6 +3,10 @@ import json
 import boto3
 from botocore import UNSIGNED
 from botocore.config import Config
+import os
+
+s3_bucket_name_from_git = os.getenv("S3_BUCKET_NAME_FROM_GIT")
+cloudfront_url_from_git = os.getenv("CLOUDFRONT_URL_FROM_GIT")
 
 # A. Download JSON from https://dummyjson.com/products
 url = "https://dummyjson.com/products"
@@ -29,13 +33,13 @@ if response.status_code == 200:
 
     # C. upload the formated JSON file:
         
-        s3_bucket_name = "static-web-terraform-eladbe-staging"
+        #s3_bucket_name = "static-web-terraform-eladbe-prod"
         s3_key = "filtered_output.json"
 
         s3 = boto3.client('s3',config=Config(signature_version=UNSIGNED))
-        s3.upload_file(output_file_path, s3_bucket_name, s3_key)
+        s3.upload_file(output_file_path, s3_bucket_name_from_git, s3_key)
 
-        s3_object = s3.get_object(Bucket=s3_bucket_name, Key=s3_key)
+        s3_object = s3.get_object(Bucket=s3_bucket_name_from_git, Key=s3_key)
         s3_content = s3_object['Body'].read().decode('utf-8')
         print("S3 File Content:")
         print(s3_content)
@@ -45,7 +49,7 @@ if response.status_code == 200:
 
     # D. Download the JSON file via CloudFront and print if successful
     session = requests.Session()
-    cloudfront_url = f'https://d2iamo8dwu1up6.cloudfront.net/{s3_key}'
+    cloudfront_url = f'{cloudfront_url_from_git}/{s3_key}'
     cloudfront_response = session.get(cloudfront_url)
 
     if cloudfront_response.status_code == 200:
@@ -57,12 +61,6 @@ if response.status_code == 200:
                 output_file_cloudfront.write(cloudfront_response.text)
             
             print(f"JSON file downloaded successfully via CloudFront and saved as {output_file_path_cloudfront}.")
-            try:
-                # Attempt to parse JSON content
-                parsed_content = json.loads(cloudfront_response.text)
-                print(json.dumps(parsed_content, indent=2))
-            except json.JSONDecodeError as e:
-                print(f"Error decoding JSON content: {e}")
         else:
             print("CloudFront response content is empty.")
     else:
