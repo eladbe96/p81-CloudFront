@@ -21,8 +21,8 @@ jobs:
         run: |
           pip install boto3 requests
         env:
-          S3_BUCKET_NAME: ${{ env.S3_BUCKET_NAME_FROM_GIT }}
-          CLOUDFRONT_URL: ${{ env.CLOUDFRONT_URL_FROM_GIT }}
+          S3_BUCKET_NAME: "static-web-terraform-eladbe-prod"
+          CLOUDFRONT_URL: "https://d1pq5w7bp4opty.cloudfront.net"
       - name: Run Python Script
         run: |
           python testing_terrgr_ver.py
