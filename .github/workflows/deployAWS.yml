@@ -41,10 +41,18 @@ jobs:
         with:
           terraform_wrapper: false
           run: |
-            echo "S3_BUCKET_NAME_FROM_GIT=$(aws_s3_bucket)" >> $GITHUB_ENV
-            echo "CLOUDFRONT_URL_FROM_GIT=$(aws_cloudfront_distribution_URL)" >> $GITHUB_ENV
+            echo "S3_BUCKET_NAME_FROM_GIT=$(terraform output aws_s3_bucket)" >> s3_bucket.txt
+            echo "CLOUDFRONT_URL_FROM_GIT=$(terraform output aws_cloudfront_distribution_URL)" >> cloudfront_id.txt
             working-directory: ${{ env.working_dir }}
             shell: bash
+      - name: upload the values for job deploy
+        uses: actions/upload-artifact@v4
+        with:
+          name: terra_values
+          path: |
+            s3_bucket.txt
+            cloudfront_id.txt
+          
 
   python_code:
     needs: deploy
@@ -52,12 +60,19 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+      - name: Download the values from deploy job
+        uses: actions/download-artifact@v4
+        with:
+          name: terra_values
+      - shell: bash
+        run: |
+          export S3_BUCKET_NAME=${echo "s3_bucket.txt"}
+          export CLOUDFRONT_URL=${echo "cloudfront_id.txt"}
+      - shell: bash
       - name: Run Python Script
         run: |
           python3 testing_terrgr_ver.py
-        env:
-          S3_BUCKET_NAME: ${{ env.S3_BUCKET_NAME_FROM_GIT }}
-          CLOUDFRONT_URL: ${{ env.CLOUDFRONT_URL_FROM_GIT }}
+
         
 
         
