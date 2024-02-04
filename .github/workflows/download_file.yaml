@@ -1,5 +1,6 @@
 name: Download the file from CloudFront
-
+on:
+  - push 
 jobs:
   run_python_script:
     runs-on: ubuntu-latest
