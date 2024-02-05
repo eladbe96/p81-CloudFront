@@ -20,6 +20,3 @@ output "aws_s3_bucket_name" {
   value =  aws_s3_bucket.testing-eladbe.id
 }
 
-output "aws_s3_owner" {
-  value =  aws_s3_bucket.testing-eladbe.tags
-}
