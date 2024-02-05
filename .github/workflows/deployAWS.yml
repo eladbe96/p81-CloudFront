@@ -35,15 +35,26 @@ jobs:
 
       - name: Deploy
         uses: gruntwork-io/terragrunt-action@v2
+        env: 
+          INPUT_POST_EXEC_1: |
+            echo "$(terragrunt output aws_s3_bucket | tr -d '"')" >> s3_bucket.txt
+          INPUT_POST_EXEC_2: |
+            echo "$(terragrunt output -raw aws_cloudfront_distribution_URL | tr -d '"')" >> cloudfront_id.txt
+          INPUT_POST_EXEC_3: |
+            cat s3_bucket.txt
         with:
           terraform_wrapper: false
           tf_version: ${{ env.tf_version }}
           tg_version: ${{ env.tg_version }}
           tg_dir: ${{ env.working_dir }}
           tg_command: 'apply'
-        run: | 
-            echo "$(terragrunt output aws_s3_bucket | tr -d '"')" >> s3_bucket.txt
-            echo "$(terragrunt output -raw aws_cloudfront_distribution_URL | tr -d '"')" >> cloudfront_id.txt
+
+      # - name: Save Terragrunt outputs
+      #   run: |
+            
+      #       echo "$(terragrunt output aws_s3_bucket | tr -d '"')" >> s3_bucket.txt
+      #       echo "$(terragrunt output -raw aws_cloudfront_distribution_URL | tr -d '"')" >> cloudfront_id.txt
+      #   working-directory: ${{ env.folder }}
 
       - name: setup python
         uses: actions/setup-python@v4
