@@ -1,10 +1,13 @@
 name: Deploy AWS Infra
-on:
-  - pull_request
+on: 
+  push:
+    branches:
+      - main
+
 env:
   tf_version: '1.5.7'
   tg_version: '0.53.2'
-  working_dir: 'prod'
+  working_dir: 'prod/eu-west-1/cloudfront'
   
 jobs:
   deploy:
@@ -12,53 +15,51 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_V2 }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY_V2 }}
           aws-region: eu-west-1
-          
-      - name: install and plan terragrunt
+
+      - name: Install and plan terragrunt
+        id: plan
         uses: gruntwork-io/terragrunt-action@v2
         with:
           tf_version: ${{ env.tf_version }}
           tg_version: ${{ env.tg_version }}
           tg_dir: ${{ env.working_dir }}
           tg_command: 'plan'
-          if: github.ref == 'refs/heads/main'
-          
+        if: github.ref == 'refs/heads/main'
+
       - name: Deploy
         uses: gruntwork-io/terragrunt-action@v2
         with:
+          terraform_wrapper: false
           tf_version: ${{ env.tf_version }}
           tg_version: ${{ env.tg_version }}
           tg_dir: ${{ env.working_dir }}
           tg_command: 'apply'
 
-      - name: Save Terraform outputs
-        uses: hashicorp/setup-terraform@v1
-        with:
-          terraform_wrapper: false
+      - name: Save Terragrunt outputs
         run: |
-            echo "S3_BUCKET_NAME_FROM_GIT=$(aws_s3_bucket)" >> $GITHUB_ENV
-            echo "CLOUDFRONT_URL_FROM_GIT=$(aws_cloudfront_distribution_URL)" >> $GITHUB_ENV
-            working-directory: ${{ env.working_dir }}
-            shell: bash
+            echo "$(terragrunt output aws_s3_bucket | tr -d '"')" >> s3_bucket.txt
+            echo "$(terragrunt output aws_cloudfront_distribution_URL | tr -d '"')" >> cloudfront_id.txt
+        working-directory: ${{ env.folder }}
 
-   python_code:
-      needs: deploy
-      runs-on: ubuntu-latest
-      steps:
-      - name: Checkout
-        uses: actions/checkout@v3
+      - name: setup python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+          working-directory:  ${{ env.folder }}
+    
       - name: Run Python Script
         run: |
+          cat s3_bucket.txt 
+          cat cloudfront_id.txt
+          export S3_BUCKET_NAME=$(cat s3_bucket.txt)
+          export CLOUDFRONT_URL=$(cat cloudfront_id.txt)
+          pip install requests boto3 
           python3 testing_terrgr_ver.py
-        env:
-          S3_BUCKET_NAME: ${{ env.S3_BUCKET_NAME_FROM_GIT }}
-          CLOUDFRONT_URL: ${{ env.CLOUDFRONT_URL_FROM_GIT }}
-        
-
-        
-    
+          working-directory: ${{ env.folder }}

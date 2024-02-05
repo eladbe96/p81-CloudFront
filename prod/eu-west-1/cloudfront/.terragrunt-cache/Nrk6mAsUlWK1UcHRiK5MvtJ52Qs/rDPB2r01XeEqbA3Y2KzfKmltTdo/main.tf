@@ -1,11 +1,17 @@
 terraform {
-  backend "local" {}
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "5.35.0"
+    }
+  }
 }
 variable "environment" {}
 variable "bucket_name" {}
 variable "product_name" {}
 variable "owner" {}
 variable "terraform" {}
+
 
 resource "aws_s3_bucket" "static-web-terraform-eladbe" {
   bucket = var.bucket_name
@@ -80,7 +86,8 @@ locals {
   s3_origin_id = "myS3Origin_${var.environment}"
 }
 
-resource "aws_cloudfront_distribution" "s3_distribution_staging" {
+resource "aws_cloudfront_distribution" "s3_distribution"  {
+  
   origin {
     domain_name              = aws_s3_bucket.static-web-terraform-eladbe.bucket_regional_domain_name
     origin_id                = local.s3_origin_id
@@ -88,7 +95,6 @@ resource "aws_cloudfront_distribution" "s3_distribution_staging" {
 
   enabled             = true
   default_root_object = "index.html"
-  staging = true
 
   default_cache_behavior {
     allowed_methods  = ["GET", "HEAD"]
@@ -126,21 +132,5 @@ resource "aws_cloudfront_distribution" "s3_distribution_staging" {
 
   viewer_certificate {
     cloudfront_default_certificate = true
-  }
-}
-
-resource "aws_cloudfront_continuous_deployment_policy" "staging" {
-  enabled = true
-
-  staging_distribution_dns_names {
-    items    = [aws_cloudfront_distribution.s3_distribution_staging.domain_name]
-    quantity = 1
-  }
-
-  traffic_config {
-    type = "SingleWeight"
-    single_weight_config {
-      weight = "0.01"
-    }
   }
 }
