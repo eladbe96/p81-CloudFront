@@ -29,6 +29,7 @@ jobs:
 
       - name: Save Terraform outputs
         id: set_outputs
+        working-directory: ./test
         run: |
             terraform output aws_s3_bucket_name
             S3_BUCKET_NAME=$(terraform output aws_s3_bucket_name)
