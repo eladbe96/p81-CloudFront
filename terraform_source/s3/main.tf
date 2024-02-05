@@ -9,14 +9,6 @@ resource "aws_s3_bucket" "static-web-terraform-eladbe" {
   }
 }
 
-resource "aws_s3_bucket_website_configuration" "static-web-eladbe" {
-  bucket = aws_s3_bucket.static-web-terraform-eladbe.id
-
-  index_document {
-    suffix = "index.html"
-  }
-}
-
 resource "aws_s3_bucket_ownership_controls" "s3-controls" {
   bucket = aws_s3_bucket.static-web-terraform-eladbe.id
   rule {
@@ -36,10 +28,10 @@ resource "aws_s3_bucket_acl" "static-web-terraform-eladbe_acl" {
 resource "aws_s3_bucket_public_access_block" "allow_public_access" {
   bucket = aws_s3_bucket.static-web-terraform-eladbe.id
 
-  block_public_acls       = false
+  block_public_acls       = true
   block_public_policy     = false
-  ignore_public_acls      = false
-  restrict_public_buckets = false
+  ignore_public_acls      = true
+  restrict_public_buckets = true
 }
 
 resource "aws_s3_bucket_policy" "allow_public_access_from_cloud_front" {

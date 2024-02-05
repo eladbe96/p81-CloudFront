@@ -70,6 +70,25 @@ jobs:
           tg_version: ${{ env.tg_version }}
           tg_dir: live/prod/eu-west-1/cloudfront
           tg_command: 'apply'
+          
+      - name: apply s3 policy - terragrunt
+        id: plan
+        uses: gruntwork-io/terragrunt-action@v2
+        with:
+          tf_version: ${{ env.tf_version }}
+          tg_version: ${{ env.tg_version }}
+          tg_dir: live/prod/eu-west-1/policy
+          tg_command: 'plan'
+        if: github.ref == 'refs/heads/main'
+
+      - name: apply s3 policy - terragrunt
+        uses: gruntwork-io/terragrunt-action@v2
+        with:
+          terraform_wrapper: false
+          tf_version: ${{ env.tf_version }}
+          tg_version: ${{ env.tg_version }}
+          tg_dir: live/prod/eu-west-1/policy
+          tg_command: 'apply'
 
       - name: Run Python Script
         run: |
