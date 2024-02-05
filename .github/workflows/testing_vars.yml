@@ -5,7 +5,6 @@ on:
       - main
 env:
   folder: ./test
-  S3_BUCKET_NAME: ''
   
 jobs:
   deploy:
@@ -23,6 +22,8 @@ jobs:
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_wrapper: false
       - name: Terraform Init
         run: terraform init
         working-directory: ${{ env.folder }}
@@ -36,9 +37,9 @@ jobs:
         
       - name: save Terraform output
         run: |
-          echo "$(terraform output aws_s3_bucket_name | tr -d '"')" >> bucket_name.txt
-          ls -lsa | grep bucket_name.txt
-          pwd
+          echo "$(terraform output aws_s3_bucket_name | tr -d '"')" > bucket_name.txt
+          echo "The bucket name is:"
+          cat bucket_name.txt
         working-directory: ${{ env.folder }}
           
       - name: setup python
@@ -46,13 +47,12 @@ jobs:
         with:
           python-version: '3.10'
           working-directory:  ${{ env.folder }}
-      - name: Read exported variable
-        run: |
-          echo ${{ env.S3_BUCKET_NAME }}
+    
       - name: Run Python Script
         working-directory: ${{ env.folder }}
         run: |
           pwd
           ls -lsa | grep bucket_name.txt
           export S3_BUCKET_NAME=$(cat bucket_name.txt)
+          print(f'The bucket name is{S3_BUCKET_NAME}')
           python3 test.py
