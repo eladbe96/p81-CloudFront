@@ -35,7 +35,7 @@ jobs:
         working-directory: ${{ env.folder }}
         
       - name: save Terraform output
-        run: echo "S3_BUCKET_NAME=$(terraform output aws_s3_bucket_name | tr -d '"')" >> $GITHUB_ENV
+        run: echo "$(terraform output aws_s3_bucket_name | tr -d '"')" >> bucket_name.txt
         working-directory: ${{ env.folder }}
           
       - name: setup python
@@ -48,4 +48,5 @@ jobs:
           echo ${{ env.S3_BUCKET_NAME }}
       - name: Run Python Script
         run: |
+          export S3_BUCKET_NAME=$(cat bucket_name.txt)
           python3 ${{ env.folder }}/test.py
