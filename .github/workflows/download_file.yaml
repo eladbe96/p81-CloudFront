@@ -1,23 +1,26 @@
 name: Download the file from CloudFront
 
 on:
-  workflow_run:
-    workflows: 
-      - deployAWS
-    types: 
-      - completed
+  pull_request
 
 jobs:
   run_python_script:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v2
-  
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          working-directory: ./
+      - name: Run Python Script
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3
+      - name: Install dependencies
+        run: |
+          pip install boto3 requests
+        env:
+          S3_BUCKET_NAME: "static-web-terraform-eladbe-prod"
+          CLOUDFRONT_URL: "https://d1pq5w7bp4opty.cloudfront.net"
       - name: Run Python Script
         run: |
-          python3 testing_terrgr_ver.py
-        env:
-          S3_BUCKET_NAME: ${{ env.S3_BUCKET_NAME_FROM_GIT }}
-          CLOUDFRONT_URL: ${{ env.CLOUDFRONT_URL_FROM_GIT }}
+          python testing_terrgr_ver.py
