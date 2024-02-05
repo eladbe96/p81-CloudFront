@@ -49,7 +49,7 @@ if response.status_code == 200:
 
     # D. Download the JSON file via CloudFront and print if successful
     session = requests.Session()
-    cloudfront_url = f'{cloudfront_url_from_git}/{s3_key}'
+    cloudfront_url = f'https://{cloudfront_url_from_git}/{s3_key}'
     cloudfront_response = session.get(cloudfront_url)
 
     if cloudfront_response.status_code == 200:
