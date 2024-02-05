@@ -3,10 +3,10 @@ on:
   push:
     branches:
       - main
-      
+
 env:
   tf_version: '1.5.7'
-  tg_version: '5.35.0'
+  tg_version: '0.50.8'
   working_dir: 'prod/eu-west-1/cloudfront'
   
 jobs:
