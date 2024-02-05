@@ -5,7 +5,6 @@ on:
       - main
 env:
   folder: ./test
-  S3_BUCKET_NAME: ''
   
 jobs:
   deploy:
