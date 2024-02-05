@@ -35,7 +35,7 @@ jobs:
         id: set_outputs
         working-directory:  ${{ env.folder }}
         run: |
-            S3_BUCKET_NAME=$(terraform output -raw aws_s3_bucket_name)
+            S3_BUCKET_NAME=$(terraform output aws_s3_bucket_name)
             echo "${S3_BUCKET_NAME}" >> $GITHUB_ENV
       - name: Run Python Script
         run: |
