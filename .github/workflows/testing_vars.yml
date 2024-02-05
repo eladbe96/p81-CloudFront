@@ -31,7 +31,6 @@ jobs:
         working-directory: ${{ env.folder }}
       
       - name: save Terraform outputs
-        working-directory:  ${{ env.folder }}
         run:
                echo "S3_BUCKET_NAME=$(terraform output aws_s3_bucket_name | tr -d '"')" >> $GITHUB_ENV
           
