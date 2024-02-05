@@ -1,0 +1,13 @@
+name: Testing vars
+on:
+   - push
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Read exported variable
+        run: export TEST="Hello world"
+      - name: Run Python Script
+        run: echo "${TEST}"
+        
+        
