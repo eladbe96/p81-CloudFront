@@ -19,8 +19,6 @@ jobs:
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v1
-        with:
-          terraform_wrapper: false
       - name: Terraform Init
         run: terraform init
         working-directory: ./test
@@ -41,4 +39,4 @@ jobs:
           export S3_BUCKET_NAME
       - name: Run Python Script
         run: |
-          python3 test.py
+          python3 ./test/test.py
