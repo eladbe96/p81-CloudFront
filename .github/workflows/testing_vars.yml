@@ -3,6 +3,10 @@ on:
   push:
     branches:
       - main
+env:
+  folder: ./test
+  S3_BUCKET_NAME: ''
+  
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -21,23 +25,22 @@ jobs:
         uses: hashicorp/setup-terraform@v1
       - name: Terraform Init
         run: terraform init
-        working-directory: ./test
+        working-directory: ${{ env.folder }}
       - name: Terraform Init
         run: terraform apply -auto-approve
-        working-directory: ./test
+        working-directory: ${{ env.folder }}
       
 
       - name: Save Terraform outputs
         id: set_outputs
-        working-directory: ./test
+        working-directory:  ${{ env.folder }}
         run: |
             terraform output aws_s3_bucket_name
-            S3_BUCKET_NAME=$(terraform output aws_s3_bucket_name)
+            ${{ env.S3_BUCKET_NAME }}=$(terraform output aws_s3_bucket_name)
     
 
       - name: Set environment variables
         run: |
-          export S3_BUCKET_NAME
       - name: Run Python Script
         run: |
-          python3 ./test/test.py
+          python3 ${{ env.folder }}/test.py
