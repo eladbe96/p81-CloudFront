@@ -2,7 +2,7 @@ name: Deploy AWS Infra
 on: 
   push:
     branches:
-      - main
+      - pull_request
 
 env:
   tf_version: '1.5.7'
