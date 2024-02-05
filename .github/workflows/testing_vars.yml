@@ -26,6 +26,7 @@ jobs:
         working-directory: ./test
       - name: Terraform Init
         run: terraform apply
+        working-directory: ./test
       
 
       - name: Save Terraform outputs
