@@ -31,7 +31,7 @@ jobs:
 
       - name: Terraform santiy check
         run: terraform output aws_s3_bucket_name | tr -d '"'
-        working-directory: ${{ env.folder }
+        working-directory: ${{ env.folder }}
         
       - name: save Terraform output
         run: echo "S3_BUCKET_NAME=$(terraform output aws_s3_bucket_name | tr -d '"')" >> $GITHUB_ENV
