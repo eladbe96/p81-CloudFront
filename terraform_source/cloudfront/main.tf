@@ -1,87 +1,4 @@
-terraform {
-  required_providers {
-    aws = {
-      source  = "hashicorp/aws"
-      version = "5.35.0"
-    }
-  }
-}
-variable "environment" {}
-variable "bucket_name" {}
-variable "product_name" {}
-variable "owner" {}
-variable "terraform" {}
-
-
-resource "aws_s3_bucket" "static-web-terraform-eladbe" {
-  bucket = var.bucket_name
-  tags = {
-    environment = var.environment
-    name = var.product_name
-    owner = var.owner
-    terraform = var.terraform
-  }
-}
-
-resource "aws_s3_bucket_website_configuration" "static-web-eladbe" {
-  bucket = aws_s3_bucket.static-web-terraform-eladbe.id
-
-  index_document {
-    suffix = "index.html"
-  }
-}
-
-resource "aws_s3_bucket_ownership_controls" "s3-controls" {
-  bucket = aws_s3_bucket.static-web-terraform-eladbe.id
-  rule {
-    object_ownership = "BucketOwnerPreferred"
-  }
-}
-
-resource "aws_s3_bucket_acl" "static-web-terraform-eladbe_acl" {
-    depends_on = [
-        aws_s3_bucket_ownership_controls.s3-controls,
-        aws_s3_bucket_public_access_block.allow_public_access,
-  ]
-  bucket = aws_s3_bucket.static-web-terraform-eladbe.id
-  acl    = "public-read-write"
-}
-
-resource "aws_s3_bucket_public_access_block" "allow_public_access" {
-  bucket = aws_s3_bucket.static-web-terraform-eladbe.id
-
-  block_public_acls       = false
-  block_public_policy     = false
-  ignore_public_acls      = false
-  restrict_public_buckets = false
-}
-
-resource "aws_s3_bucket_policy" "allow_public_access_from_cloud_front" {
-  bucket = aws_s3_bucket.static-web-terraform-eladbe.id
-  policy = data.aws_iam_policy_document.allow_public_access_from_cloud_front.json
-}
-
-data "aws_iam_policy_document" "allow_public_access_from_cloud_front" {
-  statement {
-    actions = [
-      "s3:GetObject",
-      "s3:PutObject",
-    ]
-
-    principals {
-      type = "*"
-      identifiers = ["*"]
-    }
-
-    resources = [
-      aws_s3_bucket.static-web-terraform-eladbe.arn,
-      "${aws_s3_bucket.static-web-terraform-eladbe.arn}/*",
-    ]
-    effect = "Allow"
-  }
-}
-
-
+# #CloudFront main.tf
 locals {
   s3_origin_id = "myS3Origin_${var.environment}"
 }
@@ -89,7 +6,7 @@ locals {
 resource "aws_cloudfront_distribution" "s3_distribution"  {
   
   origin {
-    domain_name              = aws_s3_bucket.static-web-terraform-eladbe.bucket_regional_domain_name
+    domain_name              = var.s3_domain
     origin_id                = local.s3_origin_id
   }
 
