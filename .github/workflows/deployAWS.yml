@@ -55,9 +55,11 @@ jobs:
           working-directory:  ${{ env.folder }}
     
       - name: Run Python Script
-        working-directory: ${{ env.folder }}
         run: |
+          cat s3_bucket.txt 
+          cat cloudfront_id.txt
           export S3_BUCKET_NAME=$(cat s3_bucket.txt)
           export CLOUDFRONT_URL=$(cat cloudfront_id.txt)
           pip install requests boto3 
           python3 testing_terrgr_ver.py
+          working-directory: ${{ env.folder }}
