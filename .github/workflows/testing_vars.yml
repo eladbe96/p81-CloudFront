@@ -1,6 +1,6 @@
 name: Deploy AWS Infra
 on: 
-  push:
+  pull_request:
     branches:
       - main
 env:
