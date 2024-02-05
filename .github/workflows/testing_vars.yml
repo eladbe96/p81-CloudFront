@@ -32,7 +32,8 @@ jobs:
       - name: Save Terraform outputs
         id: set_outputs
         run: |
-            echo "S3_BUCKET_NAME=$(terraform output aws_s3_bucket_name)" >> $GITHUB_ENV
+            terraform output aws_s3_bucket_name
+            S3_BUCKET_NAME=$(terraform output aws_s3_bucket_name)
     
 
       - name: Set environment variables
