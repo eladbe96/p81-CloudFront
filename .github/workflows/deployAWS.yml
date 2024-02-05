@@ -2,7 +2,7 @@ name: Deploy AWS Infra
 on: 
   push:
     branches:
-      - pull_request
+      - push
 
 env:
   tf_version: '1.5.7'
@@ -36,45 +36,27 @@ jobs:
       - name: Deploy
         uses: gruntwork-io/terragrunt-action@v2
         with:
+          terraform_wrapper: false
           tf_version: ${{ env.tf_version }}
           tg_version: ${{ env.tg_version }}
           tg_dir: ${{ env.working_dir }}
           tg_command: 'apply'
 
       - name: Save Terraform outputs
-        id: set_outputs
-        uses: hashicorp/setup-terraform@v1
+        run: |
+            echo "$(terraform output aws_s3_bucket | tr -d '"')" >> s3_bucket.txt
+            echo "$(terraform output aws_cloudfront_distribution_URL | tr -d '"')" >> cloudfront_id.txt
+        working-directory: ${{ env.folder }}
+
+      - name: setup python
+        uses: actions/setup-python@v4
         with:
-          terraform_wrapper: false
-          run: |
-            echo "S3_BUCKET_NAME_FROM_GIT=$(terraform output aws_s3_bucket)" >> s3_bucket.txt
-            echo "CLOUDFRONT_URL_FROM_GIT=$(terraform output aws_cloudfront_distribution_URL)" >> cloudfront_id.txt
-
-      - name: Upload the values for job deploy
-        uses: actions/upload-artifact@v4
-        with:
-          name: terra_values
-          path: |
-            s3_bucket.txt
-            cloudfront_id.txt
-
-  python_code:
-    needs: deploy
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: Download the values from deploy job
-        uses: actions/download-artifact@v4
-        with:
-          name: terra_values
-
-      - name: Set environment variables
+          python-version: '3.10'
+          working-directory:  ${{ env.folder }}
+    
+      - name: Run Python Script
+        working-directory: ${{ env.folder }}
         run: |
           export S3_BUCKET_NAME=$(cat s3_bucket.txt)
           export CLOUDFRONT_URL=$(cat cloudfront_id.txt)
-
-      - name: Run Python Script
-        run: |
           python3 testing_terrgr_ver.py
