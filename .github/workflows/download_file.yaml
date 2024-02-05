@@ -1,16 +1,12 @@
 name: Download the file from CloudFront
-
 on:
-  pull_request
-
+  workflow_dispatch
 jobs:
   run_python_script:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-        with:
-          working-directory: ./
       - name: Run Python Script
         uses: actions/setup-python@v2
         with:
@@ -18,9 +14,6 @@ jobs:
       - name: Install dependencies
         run: |
           pip install boto3 requests
-        env:
-          S3_BUCKET_NAME: "static-web-terraform-eladbe-prod"
-          CLOUDFRONT_URL: "https://d1pq5w7bp4opty.cloudfront.net"
       - name: Run Python Script
         run: |
-          python testing_terrgr_ver.py
+          python app/main.py
