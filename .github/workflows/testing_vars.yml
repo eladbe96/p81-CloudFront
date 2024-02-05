@@ -1,0 +1,41 @@
+name: Deploy AWS Infra
+on: 
+  push:
+    branches:
+      - main
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_V2 }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY_V2 }}
+          aws-region: eu-west-1
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_wrapper: false
+      - name: Terraform Init
+        run: terraform init
+        working-directory: ./test
+
+      - name: Save Terraform outputs
+        id: set_outputs
+        run: |
+            echo "S3_BUCKET_NAME=$(terraform output "aws_s3_bucket_name)" >> $GITHUB_ENV
+            echo "S3_BUCKET_OWNER=$(terraform output aws_s3_owner)" >> $GITHUB_ENV
+
+      - name: Set environment variables
+        run: |
+          export S3_BUCKET_NAME
+          export S3_BUCKET_OWNER
+
+      - name: Run Python Script
+        run: |
+          python3 test.py
