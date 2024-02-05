@@ -31,9 +31,7 @@ if response.status_code == 200:
         json.dump(filtered_output, output_file, indent=2)
         output_file.close()
 
-    # C. upload the formated JSON file:
-        
-        #s3_bucket_name = "static-web-terraform-eladbe-prod"
+#todo: make an upload using post-request
         s3_key = "filtered_output.json"
 
         s3 = boto3.client('s3',config=Config(signature_version=UNSIGNED))
