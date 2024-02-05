@@ -44,6 +44,7 @@ jobs:
 
       - name: Save Terragrunt outputs
         run: |
+            pwd
             echo "$(terragrunt output aws_s3_bucket | tr -d '"')" >> s3_bucket.txt
             echo "$(terragrunt output -raw aws_cloudfront_distribution_URL | tr -d '"')" >> cloudfront_id.txt
         working-directory: ${{ env.folder }}
