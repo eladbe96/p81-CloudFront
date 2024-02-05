@@ -37,24 +37,19 @@ jobs:
         uses: gruntwork-io/terragrunt-action@v2
         env: 
           INPUT_POST_EXEC_1: |
-            echo "$(terragrunt output aws_s3_bucket | tr -d '"')" >> s3_bucket.txt
+            echo "$(terragrunt output aws_s3_bucket | tr -d '"')" >> ${{ env.working_dir }}/s3_bucket.txt
           INPUT_POST_EXEC_2: |
-            echo "$(terragrunt output -raw aws_cloudfront_distribution_URL | tr -d '"')" >> cloudfront_id.txt
+            echo "$(terragrunt output -raw aws_cloudfront_distribution_URL | tr -d '"')" >> ${{ env.working_dir }}/cloudfront_id.txt
           INPUT_POST_EXEC_3: |
             cat s3_bucket.txt
+          INPUT_POST_EXEC_4: |
+            pwd
         with:
           terraform_wrapper: false
           tf_version: ${{ env.tf_version }}
           tg_version: ${{ env.tg_version }}
           tg_dir: ${{ env.working_dir }}
           tg_command: 'apply'
-
-      # - name: Save Terragrunt outputs
-      #   run: |
-            
-      #       echo "$(terragrunt output aws_s3_bucket | tr -d '"')" >> s3_bucket.txt
-      #       echo "$(terragrunt output -raw aws_cloudfront_distribution_URL | tr -d '"')" >> cloudfront_id.txt
-      #   working-directory: ${{ env.folder }}
 
       - name: setup python
         uses: actions/setup-python@v4
@@ -64,6 +59,7 @@ jobs:
     
       - name: Run Python Script
         run: |
+          pwd
           cat s3_bucket.txt 
           cat cloudfront_id.txt
           export S3_BUCKET_NAME=$(cat s3_bucket.txt)
