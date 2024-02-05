@@ -6,12 +6,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Read exported variable
-        run: export TEST="Hello world"
+        run: echo "Hello world" >> hello.txt
       - name: Run Python Script
         run: |
+           export TEST=${cat hello.txt}
            echo $TEST
-           export TEST2="Hello Asa"
-           echo $TEST2
-      
+    
         
         
