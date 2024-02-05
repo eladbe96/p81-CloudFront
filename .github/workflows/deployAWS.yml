@@ -37,9 +37,9 @@ jobs:
         uses: gruntwork-io/terragrunt-action@v2
         env: 
           INPUT_POST_EXEC_1: |
-            echo "$(terragrunt output aws_s3_bucket | tr -d '"')" >> ${{ env.working_dir }}/s3_bucket.txt
+            echo "$(terragrunt output aws_s3_bucket | tr -d '"')" > s3_bucket.txt
           INPUT_POST_EXEC_2: |
-            echo "$(terragrunt output -raw aws_cloudfront_distribution_URL | tr -d '"')" >> ${{ env.working_dir }}/cloudfront_id.txt
+            echo "$(terragrunt output -raw aws_cloudfront_distribution_URL | tr -d '"')" > /cloudfront_id.txt
           INPUT_POST_EXEC_3: |
             cat s3_bucket.txt
           INPUT_POST_EXEC_4: |
@@ -50,6 +50,7 @@ jobs:
           tg_version: ${{ env.tg_version }}
           tg_dir: ${{ env.working_dir }}
           tg_command: 'apply'
+          working-directory:  ${{ env.folder }}
 
       - name: setup python
         uses: actions/setup-python@v4
