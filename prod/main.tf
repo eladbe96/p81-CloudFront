@@ -1,12 +1,12 @@
-terraform {
-  backend "local" {}
-  required_providers {
-    aws = {
-      source  = "hashicorp/aws"
-      version = "4.64.0"
-    }
-  }
-}
+# terraform {
+#   backend "local" {}
+#   required_providers {
+#     aws = {
+#       source  = "hashicorp/aws"
+#       version = "4.64.0"
+#     }
+#   }
+# }
 variable "environment" {}
 variable "bucket_name" {}
 variable "product_name" {}
@@ -87,7 +87,8 @@ locals {
   s3_origin_id = "myS3Origin_${var.environment}"
 }
 
-resource "aws_cloudfront_distribution" "s3_distribution" {
+resource "aws_cloudfront_distribution" "s3_distribution"  {
+  
   origin {
     domain_name              = aws_s3_bucket.static-web-terraform-eladbe.bucket_regional_domain_name
     origin_id                = local.s3_origin_id
