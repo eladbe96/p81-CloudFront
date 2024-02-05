@@ -24,6 +24,9 @@ jobs:
       - name: Terraform Init
         run: terraform init
         working-directory: ./test
+      - name: Terraform Init
+        run: terraform apply
+      
 
       - name: Save Terraform outputs
         id: set_outputs
