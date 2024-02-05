@@ -54,5 +54,4 @@ jobs:
           pwd
           ls -lsa | grep bucket_name.txt
           export S3_BUCKET_NAME=$(cat bucket_name.txt)
-          print(f'The bucket name is{S3_BUCKET_NAME}')
           python3 test.py
