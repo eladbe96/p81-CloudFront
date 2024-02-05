@@ -7,7 +7,7 @@ on:
 env:
   tf_version: '1.5.7'
   tg_version: '0.50.8'
-  working_dir: 'prod/eu-west-1/cloudfront'
+  live_dir: 'prod/eu-west-1/cloudfront'
   
 jobs:
   deploy:
@@ -15,6 +15,11 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+      
+      - name: setup python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
@@ -29,7 +34,7 @@ jobs:
         with:
           tf_version: ${{ env.tf_version }}
           tg_version: ${{ env.tg_version }}
-          tg_dir: ${{ env.working_dir }}
+          tg_dir: ${{ env.live_dir }}
           tg_command: 'plan'
         if: github.ref == 'refs/heads/main'
 
@@ -44,27 +49,19 @@ jobs:
             cat s3_bucket.txt
           INPUT_POST_EXEC_4: |
             pwd
+          INPUT_POST_EXEC_5: |
+            ls -lsa
         with:
           terraform_wrapper: false
           tf_version: ${{ env.tf_version }}
           tg_version: ${{ env.tg_version }}
-          tg_dir: ${{ env.working_dir }}
+          tg_dir: ${{ env.live_dir }}
           tg_command: 'apply'
-          working-directory:  ${{ env.folder }}
 
-      - name: setup python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.10'
-          working-directory:  ${{ env.folder }}
-    
       - name: Run Python Script
         run: |
           pwd
-          cat s3_bucket.txt 
-          cat cloudfront_id.txt
-          export S3_BUCKET_NAME=$(cat s3_bucket.txt)
-          export CLOUDFRONT_URL=$(cat cloudfront_id.txt)
+          export S3_BUCKET_NAME=$(cat ${{ env.live_dir }}/s3_bucket.txt)
+          export CLOUDFRONT_URL=$(cat ${{ env.live_dir }}/cloudfront_id.txt)
           pip install requests boto3 
           python3 testing_terrgr_ver.py
-        working-directory: ${{ env.folder }}
