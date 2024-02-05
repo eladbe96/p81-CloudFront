@@ -28,9 +28,13 @@ jobs:
       - name: Terraform Init
         run: terraform apply -auto-approve
         working-directory: ${{ env.folder }}
-      
+
+      - name: Terraform santiy check
+        run: terraform output aws_s3_bucket_name | tr -d '"'
+        
       - name: save Terraform outputs
-        run: echo "S3_BUCKET_NAME=$(terraform output aws_s3_bucket_name | tr -d '"')" >> $GITHUB_ENV
+        run: |
+         echo "S3_BUCKET_NAME=$(terraform output aws_s3_bucket_name | tr -d '"')" >> $GITHUB_ENV
           
       - name: setup python
         uses: actions/setup-python@v4
