@@ -55,4 +55,4 @@ jobs:
           pwd
           ls -lsa | grep bucket_name.txt
           export S3_BUCKET_NAME=$(cat bucket_name.txt)
-          python3 ${{ env.folder }}/test.py
+          python3 test.py
