@@ -46,7 +46,7 @@ jobs:
         run: |
             echo "$(terragrunt output aws_s3_bucket | tr -d '"')" >> s3_bucket.txt
             echo "$(terragrunt output -raw aws_cloudfront_distribution_URL | tr -d '"')" >> cloudfront_id.txt
-            working-directory: ${{ env.folder }}
+        working-directory: ${{ env.folder }}
 
       - name: setup python
         uses: actions/setup-python@v4
@@ -62,4 +62,4 @@ jobs:
           export CLOUDFRONT_URL=$(cat cloudfront_id.txt)
           pip install requests boto3 
           python3 testing_terrgr_ver.py
-          working-directory: ${{ env.folder }}
+        working-directory: ${{ env.folder }}
