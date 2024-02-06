@@ -80,7 +80,7 @@ jobs:
           tg_dir: ${{ env.live_dir }}/cloudfront
           tg_command: 'apply'
           
-      - name: apply s3 policy - terragrunt
+      - name: plan s3 policy - terragrunt
         id: plan
         uses: gruntwork-io/terragrunt-action@v2
         with:
@@ -112,8 +112,8 @@ jobs:
           import os
           import requests
           api_version = "2022-11-28"
-          S3_BUCKET_NAME = os.environ['S3_BUCKET_NAME']
-          url_post = f"https://api.github.com/repos/{os.environ['OWNER']}/{os.environ['REPO']}/actions/variables"
+          S3_BUCKET_NAME = os.environ.get("S3_BUCKET_NAME")
+          url_post = f"https://api.github.com/repos/{os.environ.get("OWNER")}/{os.environ.get("REPO")}/actions/variables"
           headers = {
               "Accept": "application/vnd.github+json",
               "Authorization": f"Bearer {os.environ['TOKEN']}",
