@@ -111,7 +111,7 @@ jobs:
 
       - name: Set the repo var
         run: |
-          python3 set_var_repo.py
+          python3 app/set_var_repo.py
       - name: run python script
         run: |
           python3 app/main.py
