@@ -12,7 +12,7 @@ data "aws_iam_policy_document" "allow_public_access_from_cloud_front" {
     condition {
         test     = "StringEquals"
         values   = ["arn:aws:cloudfront::329082085800:distribution/${var.cloudfront_dist_id}"]
-        variable = "aws:SourceAccount"
+        variable = "aws:SourceArn"
     }
     
 
