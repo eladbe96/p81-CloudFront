@@ -78,22 +78,23 @@ of using terragrunt to keep our code DRY as possible.
 
     -- Uploading the filtered file to S3 via CloudFront
 
-    -- Downloading the file fron S3 via CloudFront
-
-* **vars.tf** - This file contains all the vars we are using in our project and their values. **Please note** that before running the ***'terraform apply'*** for the first time, some values will be empty, as they need to be filled by the User's input. **For example** github_token
-
-* **output.tf** - This file contains the values that will be printed after using ***'terraform apply/plan'*** for an easier/faster reference for the user.
+    -- Downloading the file from S3 via CloudFront
 
 ## Step-by-step guide
 
 Clone this repo using 'git-clone':
 ```bash
-git clone https://github.com/eladbe96/SRE-Task-Final.git
+git clone https://github.com/eladbe96/p81-CloudFront.git
 ```
 Install Terraform on your client:
 ```bash
 https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli
 ```
+Install terragrunt on your client:
+```bash
+https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli
+```
+
 Install and configure AWS CLI on your client:
 ```bash
 https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html
