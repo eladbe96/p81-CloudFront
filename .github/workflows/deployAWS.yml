@@ -1,6 +1,8 @@
 name: Deploy AWS Infra
 on:
-  workflow_dispatch
+  push:
+    branches:
+      - dev
 
 env:
   tf_version: '1.5.7'
