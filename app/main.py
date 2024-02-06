@@ -3,10 +3,10 @@ import json
 import os
 
 cloudfront_url_from_git = os.environ.get("CLOUDFRONT_URL")
-
+commit_sha = os.environ.get("COMMIT_SHA")
 url = "https://dummyjson.com/products"
-response = requests.get(url)
 
+response = requests.get(url)
 
 # downloading the file locally, and filterring it according to the requirements:
 if response.status_code == 200:
@@ -14,37 +14,36 @@ if response.status_code == 200:
     filtered_products = [product for product in data['products'] if product['price'] >= 100]
     keys_to_include = ['id','title','price', 'discountPercentage','thumbnail']
     filtered_output = [{key: product[key] for key in keys_to_include} for product in filtered_products]
-    output_file_path = "filtered_output.json"
+    output_file_path = f'filtered_{commit_sha}.json'
     with open(output_file_path, 'w') as output_file:
         json.dump(filtered_output, output_file, indent=2)
         output_file.close()
+        print(f'Prodcuts filtered, file {output_file_path} saved.')
 
 # uploading the filtered file to S3 via CloudFront:
-
-    file_path = "filtered_output.json"
+    print ("Uploading file starts:")
     cloudfront = f'https://{cloudfront_url_from_git}/'
-    with open(file_path, "rb") as file:
-        p = requests.put(cloudfront+f'{file_path}',data=file)
+    with open(output_file_path, "rb") as file:
+        p = requests.put(cloudfront+f'{output_file_path}',data=file)
 
     if p.status_code == 200:
-        print (f'File was uploaded!')
+        print (f'File {output_file_path} was uploaded to S3 via CloudFront!')
     else:
         print ("Error!")
 
 # Download the JSON file via CloudFront and print if successful
+    print ("Downloading file starts:")
     session = requests.Session()
-    cloudfront_url = f'https://{cloudfront_url_from_git}/{file_path}'
+    cloudfront_url = f'https://{cloudfront_url_from_git}/{output_file_path}'
     cloudfront_response = session.get(cloudfront_url)
     if cloudfront_response.status_code == 200:
-        output_file_path_cloudfront = "downloaded_file_from_cloudfront_terraform_ver1.json"
+        downloaded_file = f'downloaded_{output_file_path}'
         if cloudfront_response.text:
-            with open(output_file_path_cloudfront, 'w') as output_file_cloudfront:
+            with open(downloaded_file, 'w') as output_file_cloudfront:
                 output_file_cloudfront.write(cloudfront_response.text)
-            
-            print(f"JSON file downloaded successfully via CloudFront and saved as {output_file_path_cloudfront}.")
-            
+            print(f"{output_file_path} downloaded via CloudFront and saved as {downloaded_file}.")
         else:
-            print("CloudFront response content is empty.")
+            print("Error!")
     else:
-        print("Failed to download JSON file via CloudFront. Status code:", cloudfront_response.status_code)
+        print(f'Failed to download {output_file_path} file via CloudFront. Status code:', cloudfront_response.status_code)
   
