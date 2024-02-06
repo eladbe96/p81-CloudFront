@@ -99,10 +99,6 @@ jobs:
           tg_dir: ${{ env.live_dir }}/policy
           tg_command: 'apply'
 
-      - name: run python script
-        run: |
-          python3 app/main.py
-
         
 
 
