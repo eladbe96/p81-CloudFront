@@ -27,6 +27,9 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: '3.10'
+      - name: Install dependencies
+        run: |
+          pip install requests boto3
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
@@ -96,25 +99,38 @@ jobs:
           tg_dir: ${{ env.live_dir }}/policy
           tg_command: 'apply'
 
-      - name: Run Python Script
+      - name: Set environment variables
         run: |
-          pip install requests boto3 
-          export S3_BUCKET_NAME=$(cat ${{ env.live_dir }}/s3/s3_bucket.txt)
-          export CLOUDFRONT_URL=$(cat ${{ env.live_dir }}/cloudfront/cloudfront_id.txt)
-          url_post = f"https://api.github.com/repos/{${{ env.owner }}}/{${{ env.repo }}}/actions/variables"
+            export S3_BUCKET_NAME=$(cat ${{ env.live_dir }}/s3/s3_bucket.txt)
+            export CLOUDFRONT_URL=$(cat ${{ env.live_dir }}/cloudfront/cloudfront_id.txt)
+
+      - name: Set the repo var
+        run: |
+          python - <<EOF
+          import os
+          import requests
+          api_version = "2022-11-28"
+          S3_BUCKET_NAME = os.environ['S3_BUCKET_NAME']
+          url_post = f"https://api.github.com/repos/{os.environ['OWNER']}/{os.environ['REPO']}/actions/variables"
           headers = {
               "Accept": "application/vnd.github+json",
-              "Authorization": f"Bearer {${{ env.token }}}",
-              "X-GitHub-Api-Version": api_version }
-          
+              "Authorization": f"Bearer {os.environ['TOKEN']}",
+              "X-GitHub-Api-Version": api_version
+          }
+
           data = {
               "name": "S3",
-              "value": f'"{S3_BUCKET_NAME}"'  }
+              "value": f'"{S3_BUCKET_NAME}"'
+          }
+
           response_post = requests.post(url_post, headers=headers, json=data)
-          if response_post.status_code == 201:  
+          if response_post.status_code == 201:
               print("Variable created successfully.")
           else:
               print(f"Error: {response_post.status_code} - {response_post.text}")
+          EOF
+      - name: run python script
+        run: |
           python3 app/main.py
 
 
