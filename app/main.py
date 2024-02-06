@@ -2,7 +2,6 @@ import requests
 import json
 import os
 
-s3_bucket_name_from_git = os.environ.get("S3_BUCKET_NAME")
 cloudfront_url_from_git = os.environ.get("CLOUDFRONT_URL")
 
 url = "https://dummyjson.com/products"
