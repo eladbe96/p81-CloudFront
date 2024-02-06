@@ -3,19 +3,26 @@ locals {
   s3_origin_id = "myS3Origin_${var.environment}"
 }
 
+resource "aws_cloudfront_origin_access_control" "oac_for_cloudfront" {
+  name                              = "oac-eladbe-for-s3"
+  origin_access_control_origin_type = "s3"
+  signing_behavior                  = "always"
+  signing_protocol                  = "sigv4"
+}
+
 resource "aws_cloudfront_distribution" "s3_distribution"  {
   
   origin {
     domain_name              = var.s3_domain
     origin_id                = local.s3_origin_id
+    origin_access_control_id = aws_cloudfront_origin_access_control.oac_for_cloudfront.id
   }
 
   enabled             = true
-  default_root_object = "index.html"
 
   default_cache_behavior {
-    allowed_methods  = ["GET", "HEAD", "PUT"]
-    cached_methods   = ["GET", "HEAD", "PUT"]
+    allowed_methods  = ["HEAD", "DELETE", "POST", "GET", "OPTIONS", "PUT", "PATCH"]
+    cached_methods   = ["HEAD", "GET", "OPTIONS"]
     target_origin_id = local.s3_origin_id
 
     forwarded_values {
@@ -51,3 +58,4 @@ resource "aws_cloudfront_distribution" "s3_distribution"  {
     cloudfront_default_certificate = true
   }
 }
+

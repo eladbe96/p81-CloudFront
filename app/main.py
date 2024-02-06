@@ -1,8 +1,5 @@
 import requests
 import json
-import boto3
-from botocore import UNSIGNED
-from botocore.config import Config
 import os
 
 s3_bucket_name_from_git = os.environ.get("S3_BUCKET_NAME")
@@ -11,6 +8,8 @@ cloudfront_url_from_git = os.environ.get("CLOUDFRONT_URL")
 url = "https://dummyjson.com/products"
 response = requests.get(url)
 
+
+# downloading the file locally, and filterring it according to the requirements:
 if response.status_code == 200:
     data = response.json()
     filtered_products = [product for product in data['products'] if product['price'] >= 100]
@@ -21,34 +20,30 @@ if response.status_code == 200:
         json.dump(filtered_output, output_file, indent=2)
         output_file.close()
 
+# uploading the filtered file to S3 via CloudFront:
+
     file_path = "filtered_output.json"
-    with open(file_path, 'rb') as file:
-        rdst = requests.post("http://da2pburnyk8q2.cloudfront.net", files={'file': file})
+    cloudfront = f'{cloudfront_url_from_git}/'
+    with open(file_path, "rb") as file:
+        p = requests.put(cloudfront+f'{file_path}',data=file)
 
-        # s3_key = "filtered_output.json"
-        # s3 = boto3.client('s3',config=Config(signature_version=UNSIGNED))
-        # s3.upload_file(output_file_path, s3_bucket_name_from_git, s3_key)
-        # s3_object = s3.get_object(Bucket=s3_bucket_name_from_git, Key=s3_key)
-        # s3_content = s3_object['Body'].read().decode('utf-8')
-        # print("S3 File Content:")
-        # print(s3_content)
-        # print("S3 File Size:", len(s3_content))
-    
+    if p.status_code == 200:
+        print (f'File was uploaded!')
+    else:
+        print ("Error!")
 
-    # D. Download the JSON file via CloudFront and print if successful
+# Download the JSON file via CloudFront and print if successful
     session = requests.Session()
-    cloudfront_url = f'https://{cloudfront_url_from_git}/{file_path}'
+    cloudfront_url = f'{cloudfront_url_from_git}/{file_path}'
     cloudfront_response = session.get(cloudfront_url)
-
     if cloudfront_response.status_code == 200:
-        # Change the output file name while saving
         output_file_path_cloudfront = "downloaded_file_from_cloudfront_terraform_ver1.json"
-        # Check if the CloudFront response content is not empty
         if cloudfront_response.text:
             with open(output_file_path_cloudfront, 'w') as output_file_cloudfront:
                 output_file_cloudfront.write(cloudfront_response.text)
             
             print(f"JSON file downloaded successfully via CloudFront and saved as {output_file_path_cloudfront}.")
+            
         else:
             print("CloudFront response content is empty.")
     else:
