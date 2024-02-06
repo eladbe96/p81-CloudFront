@@ -5,6 +5,14 @@ on:
 env:
   tf_version: '1.5.7'
   tg_version: '0.50.8'
+  live_dir: 'live/prod/eu-west-1'
+  owner: "eladbe96"
+  repo: "p81-CloudFront"
+  api_version: "2022-11-28"
+  token: ${{ secrets.GIT_TOKEN }}
+  s3_name: "S3"
+  cloud_front_url: "CLOUDFRONT_URL"
+
   
 jobs:
   deploy:
@@ -30,7 +38,7 @@ jobs:
         with:
           tf_version: ${{ env.tf_version }}
           tg_version: ${{ env.tg_version }}
-          tg_dir: live/prod/eu-west-1/s3
+          tg_dir: ${{ env.live_dir }}/s3
           tg_command: 'plan'
         if: github.ref == 'refs/heads/main'
 
@@ -43,7 +51,7 @@ jobs:
           terraform_wrapper: false
           tf_version: ${{ env.tf_version }}
           tg_version: ${{ env.tg_version }}
-          tg_dir: live/prod/eu-west-1/s3
+          tg_dir: ${{ env.live_dir }}/s3
           tg_command: 'apply'
 
       - name: plan cloudfront - terragrunt
@@ -51,7 +59,7 @@ jobs:
         with:
           tf_version: ${{ env.tf_version }}
           tg_version: ${{ env.tg_version }}
-          tg_dir: live/prod/eu-west-1/cloudfront
+          tg_dir: ${{ env.live_dir }}/cloudfront
           tg_command: 'plan'
         if: github.ref == 'refs/heads/main'
 
@@ -64,7 +72,7 @@ jobs:
           terraform_wrapper: false
           tf_version: ${{ env.tf_version }}
           tg_version: ${{ env.tg_version }}
-          tg_dir: live/prod/eu-west-1/cloudfront
+          tg_dir: ${{ env.live_dir }}/cloudfront
           tg_command: 'apply'
           
       - name: apply s3 policy - terragrunt
@@ -73,7 +81,7 @@ jobs:
         with:
           tf_version: ${{ env.tf_version }}
           tg_version: ${{ env.tg_version }}
-          tg_dir: live/prod/eu-west-1/policy
+          tg_dir: ${{ env.live_dir }}/policy
           tg_command: 'plan'
         if: github.ref == 'refs/heads/main'
 
@@ -83,14 +91,28 @@ jobs:
           terraform_wrapper: false
           tf_version: ${{ env.tf_version }}
           tg_version: ${{ env.tg_version }}
-          tg_dir: live/prod/eu-west-1/policy
+          tg_dir: ${{ env.live_dir }}/policy
           tg_command: 'apply'
 
       - name: Run Python Script
         run: |
-          export S3_BUCKET_NAME=$(cat live/prod/eu-west-1/s3/s3_bucket.txt)
-          export CLOUDFRONT_URL=$(cat live/prod/eu-west-1/cloudfront/cloudfront_id.txt)
           pip install requests boto3 
+          export S3_BUCKET_NAME=$(cat ${{ env.live_dir }}/s3/s3_bucket.txt)
+          export CLOUDFRONT_URL=$(cat ${{ env.live_dir }}/cloudfront/cloudfront_id.txt)
+          url_post = f"https://api.github.com/repos/{${{ env.owner }}}/{${{ env.repo }}}/actions/variables"
+          headers = {
+              "Accept": "application/vnd.github+json",
+              "Authorization": f"Bearer {${{ env.token }}}",
+              "X-GitHub-Api-Version": api_version }
+          
+          data = {
+              "name": "S3",
+              "value": f'"{S3_BUCKET_NAME}"'  }
+          response_post = requests.post(url_post, headers=headers, json=data)
+          if response_post.status_code == 201:  
+              print("Variable created successfully.")
+          else:
+              print(f"Error: {response_post.status_code} - {response_post.text}")
           python3 app/main.py
 
 
