@@ -99,9 +99,11 @@ jobs:
       - name: Set environment variables
         run: |
             
-            export OWNER=$(echo ${{ env.owner }})
-            export REPO=$(echo ${{ env.repo }})
-            export TOKEN=$(echo ${{ env.token }})
+            export OWNER=${{ env.owner }}
+            echo $OWNER
+            export REPO=${{ env.repo }}
+            echo $REPO
+            export TOKEN=${{ env.token }}
             echo "Live directory: ${{ env.live_dir }}"
             export S3_BUCKET_NAME=$(cat ${{ env.live_dir }}/s3/s3_bucket.txt)
             export CLOUDFRONT_URL=$(cat ${{ env.live_dir }}/cloudfront/cloudfront_id.txt)
