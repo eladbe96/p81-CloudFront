@@ -103,9 +103,8 @@ jobs:
             export REPO=${{ env.repo }}
             export TOKEN=${{ env.token }}
             echo "Live directory: ${{ env.live_dir }}"
-            echo 'Owner: ${OWNER}'
-            echo 'Repo: ${REPO}'
-            echo 'Token: ${TOKEN}'
+            echo $OWNER
+            echo $REPO
             export S3_BUCKET_NAME=$(cat ${{ env.live_dir }}/s3/s3_bucket.txt)
             export CLOUDFRONT_URL=$(cat ${{ env.live_dir }}/cloudfront/cloudfront_id.txt)
 

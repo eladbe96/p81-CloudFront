@@ -5,6 +5,7 @@ owner = os.environ.get("OWNER")
 repo = os.environ.get("REPO")
 token = os.environ.get("TOKEN")
 s3_bukcet = os.environ.get("S3_BUCKET_NAME")
+variable_name = "s3"
 
 #Post Var:
 url_post = f"https://api.github.com/repos/{owner}/{repo}/actions/variables"
