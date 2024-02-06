@@ -111,11 +111,13 @@ jobs:
           api_version = "2022-11-28"
           owner = os.environ.get("OWNER")
           repo = os.environ.get("REPO")
+          token = os.environ.get("TOKEN")
           S3_BUCKET_NAME = os.environ.get("S3_BUCKET_NAME")
+          
           url_post = f"https://api.github.com/repos/{owner}/{repo}/actions/variables"
           headers = {
               "Accept": "application/vnd.github+json",
-              "Authorization": f"Bearer {os.environ['TOKEN']}",
+              "Authorization": f"Bearer {token}",
               "X-GitHub-Api-Version": api_version
           }
 
