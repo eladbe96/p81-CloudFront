@@ -92,7 +92,7 @@ https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli
 ```
 Install terragrunt on your client:
 ```bash
-https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli
+https://terragrunt.gruntwork.io/docs/getting-started/install/
 ```
 
 Install and configure AWS CLI on your client:
@@ -109,7 +109,7 @@ export AWS_SECRET_ACCESS_KEY=
 ```
 Move to the folder of the cloned repository:
 ```bash
-cd SRE-Task-Final
+cd p81-CloudFront
 ```
 Initialize the directory and validate your configuration:
 ```bash
