@@ -1,0 +1,16 @@
+name: download the file
+on:
+  workflow_dispatch
+
+jobs:
+    download:
+      runs-on: ubuntu-latest
+      steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Run Python Script
+        run: |
+          export CLOUDFRONT_URL=${{ vars.CLOUDFRONT_URL }}
+          echo $CLOUDFRONT_URL
+          python3 app/main.py
+        
