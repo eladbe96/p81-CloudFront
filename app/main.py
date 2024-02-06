@@ -23,7 +23,7 @@ if response.status_code == 200:
 # uploading the filtered file to S3 via CloudFront:
 
     file_path = "filtered_output.json"
-    cloudfront = f'{cloudfront_url_from_git}/'
+    cloudfront = f'https://{cloudfront_url_from_git}/'
     with open(file_path, "rb") as file:
         p = requests.put(cloudfront+f'{file_path}',data=file)
 
@@ -34,7 +34,7 @@ if response.status_code == 200:
 
 # Download the JSON file via CloudFront and print if successful
     session = requests.Session()
-    cloudfront_url = f'{cloudfront_url_from_git}/{file_path}'
+    cloudfront_url = f'https://{cloudfront_url_from_git}/{file_path}'
     cloudfront_response = session.get(cloudfront_url)
     if cloudfront_response.status_code == 200:
         output_file_path_cloudfront = "downloaded_file_from_cloudfront_terraform_ver1.json"
