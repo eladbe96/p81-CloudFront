@@ -53,7 +53,6 @@ jobs:
           INPUT_POST_EXEC_1: |
             echo "$(terragrunt output aws_s3_bucket | tr -d '"')" > s3_bucket.txt
         with:
-          terraform_wrapper: false
           tf_version: ${{ env.tf_version }}
           tg_version: ${{ env.tg_version }}
           tg_dir: ${{ env.live_dir }}/s3
@@ -74,7 +73,6 @@ jobs:
           INPUT_POST_EXEC_1: |
             echo "$(terragrunt output -raw aws_cloudfront_distribution_URL | tr -d '"')" > cloudfront_id.txt
         with:
-          terraform_wrapper: false
           tf_version: ${{ env.tf_version }}
           tg_version: ${{ env.tg_version }}
           tg_dir: ${{ env.live_dir }}/cloudfront
@@ -93,7 +91,6 @@ jobs:
       - name: apply s3 policy - terragrunt
         uses: gruntwork-io/terragrunt-action@v2
         with:
-          terraform_wrapper: false
           tf_version: ${{ env.tf_version }}
           tg_version: ${{ env.tg_version }}
           tg_dir: ${{ env.live_dir }}/policy
@@ -112,8 +109,10 @@ jobs:
           import os
           import requests
           api_version = "2022-11-28"
+          owner = os.environ.get("OWNER")
+          repo = os.environ.get("REPO")
           S3_BUCKET_NAME = os.environ.get("S3_BUCKET_NAME")
-          url_post = f"https://api.github.com/repos/{os.environ.get("OWNER")}/{os.environ.get("REPO")}/actions/variables"
+          url_post = f"https://api.github.com/repos/{owner}/{repo}/actions/variables"
           headers = {
               "Accept": "application/vnd.github+json",
               "Authorization": f"Bearer {os.environ['TOKEN']}",
