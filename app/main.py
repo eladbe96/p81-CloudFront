@@ -41,7 +41,7 @@ if response.status_code == 200:
         if cloudfront_response.text:
             with open(downloaded_file, 'w') as output_file_cloudfront:
                 output_file_cloudfront.write(cloudfront_response.text)
-            print (downloaded_file)
+            print(cloudfront_response.text)
             print(f"{filtered_file} downloaded via CloudFront and saved as {downloaded_file}.")
         else:
             print("Error!")
