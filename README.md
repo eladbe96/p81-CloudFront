@@ -1,3 +1,5 @@
+
+
 ![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54)
 ![AWS](https://img.shields.io/badge/AWS-%23FF9900.svg?style=for-the-badge&logo=amazon-aws&logoColor=white)
 ![Terraform](https://img.shields.io/badge/terraform-%235835CC.svg?style=for-the-badge&logo=terraform&logoColor=white)
@@ -17,21 +19,22 @@ To use this project, make sure to meet the following prerequisites:
 
 ## Cost, Load and Security
 
-#### Cost 
+### Cost 
 
 We are using the following AWS services:
 
 * **S3** -  we are storing very small files in our project:
-1. S3 bucket that contains the artifcat
-2. S3 bucket thet contains the terragrunt remote state.
+    * S3 bucket that contains the artifcat
+    * S3 bucket thet contains the terragrunt remote state.
 Therefore, we shouldn't pass the lowest price for month, which is "First 50 TB / Month / $0.023 per GB"
 
 * **CloudFront** - As for the data transffer since we are using CloudFront, we shouldn't be charged for the Data transferred out to Amazon CloudFront (CloudFront),
-Same goes for the Data transferred in from the internet.
+    
+    Same goes for the Data transferred in from the internet.
 
-Resource: https://aws.amazon.com/s3/pricing/
+    Resource: https://aws.amazon.com/s3/pricing/
 
-#### Security
+### Security
 
 According to the requirements, the access to the S3 is allowed only via CloudFront, and thus a direct access to the
 S3 bucket and its object is blocked.
@@ -80,7 +83,24 @@ of using terragrunt to keep our code DRY as possible.
 
     -- Downloading the file from S3 via CloudFront
 
-## Step-by-step guide
+### Step-by-step guide
+
+* **CI-CD Approach**
+
+    This project contains a built-in CI-CD approach, using GitHub Actions, that is handling the whole
+    deployment of the AWS infrastracture and can easily handle any change that needs to be deployed in the future
+    to the infra.
+
+    To use this approach, follow the below instructions:
+
+    *  On the toolbar, go to actions
+    * On the right side, under "All workflows", choose "Deploy AWS Infra"
+        This GithubAction workflow will build the needed resources on AWS.
+    * Once done, to upload/download the required JSON file to/from S3 via CloufFront, choose "download the file" workflow.
+        The output should contains the requested products list, according to the requirements.
+
+    ![App Screenshot](https://github.com/eladbe96/p81-CloudFront/blob/main/Screenshots/download_file_example.png)
+
 
 Clone this repo using 'git-clone':
 ```bash
@@ -107,6 +127,8 @@ Authenticate the Terraform AWS provider using your IAM credentials:
 export AWS_ACCESS_KEY_ID=
 export AWS_SECRET_ACCESS_KEY=
 ```
+Now we need to deploy our resources one after the other, considering the correct following order:
+- S
 Move to the folder of the cloned repository:
 ```bash
 cd p81-CloudFront
@@ -189,3 +211,4 @@ The import process enables you to change the dashboard's name, pick the data sou
 ![Alt text](/Screenshots/Grafana_Query.png?raw=true "Grafana example")
 
 * Once the above is configured, save and apply the changes on the top right-side menu, to view the CloudWatch logs of your Lambda function
+
