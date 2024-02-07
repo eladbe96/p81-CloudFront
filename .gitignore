@@ -3,3 +3,5 @@ terraform.tfstate*
 .terragrunt-cache
 .terraform.lock.hcl
 test.py
+dummy*
+full_dummy
