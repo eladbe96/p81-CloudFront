@@ -101,11 +101,6 @@ of using terragrunt to keep our code DRY as possible.
 
     ![App Screenshot](https://github.com/eladbe96/p81-CloudFront/blob/main/Screenshots/download_file_example.png)
 
-
-Clone this repo using 'git-clone':
-```bash
-git clone https://github.com/eladbe96/p81-CloudFront.git
-```
 Install Terraform on your client:
 ```bash
 https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli
@@ -127,88 +122,27 @@ Authenticate the Terraform AWS provider using your IAM credentials:
 export AWS_ACCESS_KEY_ID=
 export AWS_SECRET_ACCESS_KEY=
 ```
-Now we need to deploy our resources one after the other, considering the correct following order:
-- S
-Move to the folder of the cloned repository:
+Clone this repo using 'git-clone':
 ```bash
-cd p81-CloudFront
+git clone https://github.com/eladbe96/p81-CloudFront.git
 ```
-Initialize the directory and validate your configuration:
+Now we need to deploy our resources one after the other, considering the correct following order:
+- s3
+- cloudfront
+- policy
+
+Move to the folder of the cloned repository, directly to the s3 relevant folder:
 ```bash
-terraform init
-terraform validate
+cd p81-CloudFront/live/prod/eu-west-1/s3
+```
+Initialize the directory and validate your configuration using terragrunt:
+```bash
+terragrunt plan
+terragrunt validate
 ```
 Apply the configuration:
 ```bash
-terraform apply
+terragrunt apply
 ```
 
-## Usage/Examples
-
-Once a pull request is merged to your repo, check for your logs via one of the following:
-
-* CloudWatch logs
-* AWS CLI 
-* External log viewer(for example: Grafana)
-
-To check via AWS CLI, you can use the following command:
-```bash
-aws logs filter-log-events --log-group-name "/aws/lambda/function_name" | less
-```
-In our case, the function name is "github_logger:
-```bash
-aws logs filter-log-events --log-group-name "/aws/lambda/github_logger" | less
-```
-
-### Grafana example:
-
-To view the logs via Grafana, access the below link for the installation according to your Operating System:
-
-```bash
-https://grafana.com/grafana/download
-```
-#### Login
-* Open your web browser and go to ***http://localhost:3000/***.
-* The default HTTP port that Grafana listens to is 3000 unless you have configured a different port.
-* On the sign-in page, enter admin for the username and password.
-* Click Sign in.
-* If successful, you will see a prompt to change the password.
-* Click OK on the prompt and change your password.
-
-#### Adding Data source:
-
-To access the CloudWatch logs via the Grafana dashboard, follow the instructions below:
-
-* Click **Connections** in the left-side menu.
-* Under Your connections, click **Data sources**.
-* Enter **CloudWatch** in the search bar.
-* Click **CloudWatch**.
-* Fill in the required displayed configuration.
-
-#### Import Lambda dashboard
-
-* Click Dashboards in the left-side menu.
-* Click New and select Import in the dropdown menu.
-
-Perform one of the following steps:
-
-* Upload a dashboard JSON file
-* Paste a Grafana.com dashboard URL
-* Copy the dashboard's ID
-
-The import process enables you to change the dashboard's name, pick the data source you want the dashboard to use(CloudWatch in our case), and specify any metric prefixes (if the dashboard uses any).
-
-
-### Accessing the logs
-
-* Click Dashboards in the left-side menu.
-* Click New and select **New Dashboard**
-* In the next screen, select **Add Visualization."
-* Select the **CloudWatch** Data source
-* On the right-side menu, select **Table** instead of **Time-series**
-* On the bottom left side, under the **Query** section, make sure to configure the query as below:
-
-![Alt text](/Screenshots/Grafana_Query.png?raw=true "Grafana example")
-
-* Once the above is configured, save and apply the changes on the top right-side menu, to view the CloudWatch logs of your Lambda function
 
