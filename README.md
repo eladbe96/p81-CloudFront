@@ -101,6 +101,8 @@ of using terragrunt to keep our code DRY as possible.
 
     ![App Screenshot](https://github.com/eladbe96/p81-CloudFront/blob/main/Screenshots/download_file_example.png)
 
+* **Manual Approach**
+
 Install Terraform on your client:
 ```bash
 https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli
