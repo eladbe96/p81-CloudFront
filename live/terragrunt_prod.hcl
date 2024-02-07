@@ -28,10 +28,10 @@ remote_state {
     if_exists = "overwrite_terragrunt"
   }
   config = {
-    bucket = "my-testing-backend-eladbe"
+    bucket = "eladbe-terraform-state"
 
     key = "${path_relative_to_include()}/terraform.tfstate"
-    region         = "ap-northeast-1"
+    region         = "eu-west-1"
     encrypt        = true
   }
 }
