@@ -94,10 +94,12 @@ of using terragrunt to keep our code DRY as possible.
     To use this approach, follow the below instructions:
 
     *  On the toolbar, go to actions
-    * On the right side, under "All workflows", choose "Deploy AWS Infra"
+    * On the right side, under "All workflows", choose "Deploy AWS Infra".  To start the workflow, on the right side, click on "Run workflow".
         This GithubAction workflow will build the needed resources on AWS.
+        ![App Screenshot](https://github.com/eladbe96/p81-CloudFront/blob/main/Screenshots/Run_Workflow_example.png)
     * Once done, to upload/download the required JSON file to/from S3 via CloufFront, choose "download the file" workflow.
         The output should contains the requested products list, according to the requirements.
+
 
     ![App Screenshot](https://github.com/eladbe96/p81-CloudFront/blob/main/Screenshots/download_file_example.png)
 
